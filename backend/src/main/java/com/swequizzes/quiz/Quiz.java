@@ -30,6 +30,9 @@ public class Quiz {
     @Column(nullable = false)
     private int timeSeconds;
 
+    @Column(nullable = false)
+    private boolean randomized;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     @JsonIgnore
@@ -44,6 +47,7 @@ public class Quiz {
     public String getDescription() { return description; }
     public Category getCategory() { return category; }
     public int getTimeSeconds() { return timeSeconds; }
+    public boolean isRandomized() { return randomized; }
     public Account getAccount() { return account; }
     public List<Question> getQuestions() { return questions; }
 
@@ -52,6 +56,7 @@ public class Quiz {
     public void setDescription(String description) { this.description = description; }
     public void setCategory(Category category) { this.category = category; }
     public void setTimeSeconds(int timeSeconds) { this.timeSeconds = timeSeconds; }
+    public void setRandomized(boolean randomized) { this.randomized = randomized; }
     public void setAccount(Account account) { this.account = account; }
     public void setQuestions(List<Question> questions) { this.questions = questions; }
 }

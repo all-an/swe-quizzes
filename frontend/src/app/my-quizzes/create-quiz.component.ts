@@ -31,6 +31,7 @@ export class CreateQuizComponent implements OnInit {
   categorySlug = '';
   newCategoryName = '';
   timeSeconds = 300;
+  randomized = false;
   categories = signal<Category[]>([]);
   systemQuestions = signal<Question[]>([]);
   systemQuestionsPage = signal(0);
@@ -173,6 +174,7 @@ export class CreateQuizComponent implements OnInit {
       description: this.description,
       categorySlug: this.categorySlug,
       timeSeconds: this.timeSeconds,
+      randomized: this.randomized,
       questions: customQuestions,
       systemQuestionIds: Array.from(this.selectedSystemQuestionIds),
     };
@@ -261,6 +263,7 @@ export class CreateQuizComponent implements OnInit {
     this.description = quiz.description;
     this.categorySlug = quiz.category.slug;
     this.timeSeconds = quiz.timeSeconds;
+    this.randomized = quiz.randomized;
     this.selectedSystemQuestionIds.clear();
     this.questions = quiz.questions.map(question => ({
       text: question.text,

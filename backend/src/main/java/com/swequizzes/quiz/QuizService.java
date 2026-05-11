@@ -78,6 +78,7 @@ public class QuizService {
         quiz.setTitle(requireText(request.title(), "Title is required"));
         quiz.setDescription(requireText(request.description(), "Description is required"));
         quiz.setCategory(category);
+        quiz.setRandomized(Boolean.TRUE.equals(request.randomized()));
         List<Question> questions = new ArrayList<>();
         if (request.systemQuestionIds() != null && !request.systemQuestionIds().isEmpty()) {
             for (Question systemQuestion : questionRepository.findAllById(request.systemQuestionIds())) {

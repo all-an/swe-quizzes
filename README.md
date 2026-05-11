@@ -1,6 +1,8 @@
 # Software Engineering Quizzes (swe-quizzes)
 
-A full-stack quiz platform covering AWS, Java, and Angular topics. Built with Spring Boot (backend) and Angular (frontend), deployed as a single Docker container.
+A full-stack quiz platform covering any topics. Built with Spring Boot (backend) and Angular (frontend), deployed as a single Docker container.
+
+[Website deployed](https://swequizzes.onrender.com/)
 
 ## Stack
 
@@ -82,6 +84,26 @@ docker run -p 8080:8080 \
   -e SPRING_DATASOURCE_PASSWORD=<password> \
   swe-quizzes
 ```
+
+### Build the distribution JAR
+
+`build-dist.sh` builds the Angular app, copies it into the Spring Boot `static/` folder, then packages the executable JAR.
+
+```bash
+./build-dist.sh
+```
+
+Output: `backend/target/swe-quizzes-0.0.1-SNAPSHOT.jar`.
+
+### Build and push the Docker image
+
+`docker-build-push.sh` runs `build-dist.sh`, builds the `linux/amd64` image from `Dockerfile.render`, and pushes it to Docker Hub as `allan8tech/swe-quizzes:v1`.
+
+```bash
+./docker-build-push.sh
+```
+
+Requires `docker login` to a Docker Hub account with push access to `allan8tech/swe-quizzes`.
 
 ---
 

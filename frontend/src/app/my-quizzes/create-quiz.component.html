@@ -41,6 +41,10 @@
       Description
       <textarea rows="3" [(ngModel)]="description" [class.invalid]="descriptionInvalid()"></textarea>
     </label>
+    <label class="correct-row">
+      <input type="checkbox" [(ngModel)]="randomized" />
+      Randomize question order for players
+    </label>
     <div class="new-category">
       <label>
         New Category

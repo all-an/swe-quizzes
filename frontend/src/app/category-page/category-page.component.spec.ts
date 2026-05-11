@@ -13,6 +13,7 @@ const mockQuizzes: Quiz[] = [
     title: 'AWS Fundamentals',
     description: 'AWS basics',
     timeSeconds: 300,
+    randomized: false,
     category: { id: 1, name: 'AWS', slug: 'aws' },
     questions: [],
   },

@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuizService } from '../services/quiz.service';
+import { AuthService } from '../services/auth.service';
 import { Category } from '../models/quiz.model';
 
 @Component({
@@ -8,14 +9,29 @@ import { Category } from '../models/quiz.model';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   categories = signal<Category[]>([]);
   loading = signal(true);
   error = signal('');
 
-  constructor(private quizService: QuizService, private router: Router) {}
+  constructor(
+    private quizService: QuizService,
+    private auth: AuthService,
+    private router: Router
+  ) {
+    effect(() => {
+      this.auth.account();
+      this.loadCategories();
+    });
+  }
 
-  ngOnInit() {
+  open(slug: string) {
+    this.router.navigate(['/category', slug]);
+  }
+
+  private loadCategories() {
+    this.loading.set(true);
+    this.error.set('');
     this.quizService.getCategories().subscribe({
       next: categories => {
         this.categories.set(categories);
@@ -26,9 +42,5 @@ export class HomeComponent implements OnInit {
         this.loading.set(false);
       },
     });
-  }
-
-  open(slug: string) {
-    this.router.navigate(['/category', slug]);
   }
 }

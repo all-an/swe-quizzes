@@ -11,6 +11,7 @@ const mockQuiz: Quiz = {
   title: 'AWS Fundamentals',
   description: 'Test your AWS knowledge.',
   timeSeconds: 300,
+  randomized: false,
   category: mockCategory,
   questions: [
     {

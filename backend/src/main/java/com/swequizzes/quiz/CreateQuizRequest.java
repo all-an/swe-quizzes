@@ -7,6 +7,7 @@ public record CreateQuizRequest(
         String description,
         String categorySlug,
         Integer timeSeconds,
+        Boolean randomized,
         List<CreateQuestionRequest> questions,
         List<Long> systemQuestionIds
 ) {}

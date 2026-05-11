@@ -27,6 +27,7 @@ export interface Quiz {
   description: string;
   category: Category;
   timeSeconds: number;
+  randomized: boolean;
   questions: Question[];
 }
 
@@ -92,6 +93,7 @@ export interface CreateQuizPayload {
   description: string;
   categorySlug: string;
   timeSeconds: number;
+  randomized: boolean;
   questions: CreateQuestionPayload[];
   systemQuestionIds: number[];
 }

@@ -32,11 +32,20 @@ export class QuizComponent implements OnInit, OnDestroy {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.quizService.getById(id).subscribe({
       next: quiz => {
-        this.quiz.set(quiz);
+        this.quiz.set(quiz.randomized ? this.withShuffledQuestions(quiz) : quiz);
         this.startTimer();
       },
       error: () => this.router.navigate(['/']),
     });
+  }
+
+  private withShuffledQuestions(quiz: Quiz): Quiz {
+    const shuffled = [...quiz.questions];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return { ...quiz, questions: shuffled };
   }
 
   ngOnDestroy() {
