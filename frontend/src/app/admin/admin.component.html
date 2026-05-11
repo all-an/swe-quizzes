@@ -1,0 +1,73 @@
+<main class="admin-page">
+  <section class="admin-header">
+    <h1>Admin</h1>
+    <button type="button" (click)="refresh()">Refresh</button>
+  </section>
+
+  @if (message()) {
+    <p class="status">{{ message() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="status">Loading...</p>
+  } @else if (settings()) {
+    <section class="panel">
+      <h2>Settings</h2>
+      <label class="toggle-row">
+        <input type="checkbox" [(ngModel)]="settings()!.disableLogin" />
+        <span>
+          <strong>Disable non-admin login</strong>
+          <small>When enabled, the login page tells users that only admin login is available.</small>
+        </span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" [(ngModel)]="settings()!.disableRegister" />
+        <span>
+          <strong>Disable new registrations</strong>
+          <small>When enabled, the register page blocks new accounts.</small>
+        </span>
+      </label>
+      <button type="button" (click)="save()">Save Settings</button>
+    </section>
+  }
+
+  <section class="panel">
+    <h2>Recent Access Logs</h2>
+    <div class="table">
+      <div class="row header">
+        <span>Time</span>
+        <span>IP</span>
+        <span>Country</span>
+      </div>
+      @for (log of accessLogs(); track log.id) {
+        <div class="row">
+          <span>{{ log.createdAt }}</span>
+          <span>{{ log.ipAddress }}</span>
+          <span>{{ log.country }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Recent Session Logs</h2>
+    <div class="table">
+      <div class="row header">
+        <span>Time</span>
+        <span>Event</span>
+        <span>Account</span>
+        <span>IP</span>
+        <span>Country</span>
+      </div>
+      @for (log of sessionLogs(); track log.id) {
+        <div class="row session-row">
+          <span>{{ log.createdAt }}</span>
+          <span>{{ log.eventType }}</span>
+          <span>{{ log.account?.email || 'anonymous' }}</span>
+          <span>{{ log.ipAddress }}</span>
+          <span>{{ log.country }}</span>
+        </div>
+      }
+    </div>
+  </section>
+</main>

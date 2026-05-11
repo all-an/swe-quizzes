@@ -1,0 +1,3 @@
+package com.swequizzes.account;
+
+public record RegisterRequest(String name, String email, String password) {}

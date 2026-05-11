@@ -1,0 +1,44 @@
+<div class="quiz-page">
+  @if (!quiz()) {
+    <p class="status">Loading...</p>
+  } @else if (currentQuestion()) {
+    <div class="quiz-header">
+      <span class="quiz-title">{{ quiz()!.title }}</span>
+      <span class="timer" [class.urgent]="timeLeft() <= 5">{{ timeLeft() }}s</span>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" [style.width.%]="(currentIndex() / quiz()!.questions.length) * 100"></div>
+    </div>
+
+    <p class="question-count">Question {{ currentIndex() + 1 }} of {{ quiz()!.questions.length }}</p>
+    <h2 class="question-text">{{ currentQuestion()!.text }}</h2>
+    @if (currentQuestion()!.codeSnippet) {
+      <pre class="code-block"><code>{{ currentQuestion()!.codeSnippet }}</code></pre>
+    }
+
+    <div class="answers">
+      @for (answer of currentQuestion()!.answers; track answer.id; let i = $index) {
+        <button
+          class="answer-btn"
+          [class.selected]="selectedAnswerIndex() === i"
+          [class.correct]="selectedAnswerIndex() !== null && answer.correct"
+          [class.wrong]="selectedAnswerIndex() === i && !answer.correct"
+          [disabled]="selectedAnswerIndex() !== null"
+          (click)="selectAnswer(i)"
+        >
+          <span>{{ answer.description }}</span>
+          @if (answer.codeSnippet) {
+            <pre class="answer-code"><code>{{ answer.codeSnippet }}</code></pre>
+          }
+        </button>
+      }
+    </div>
+
+    @if (selectedAnswerIndex() !== null) {
+      <button class="next-btn" (click)="next()">
+        {{ currentIndex() + 1 === quiz()!.questions.length ? 'See Results' : 'Next' }}
+      </button>
+    }
+  }
+</div>

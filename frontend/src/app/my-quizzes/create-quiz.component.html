@@ -1,0 +1,157 @@
+<main class="create-page">
+  <section class="header">
+    <div>
+      <h1>{{ editId() ? 'Edit Quiz' : 'Create Quiz' }}</h1>
+      <p>{{ editId() ? 'Update quiz details, questions, answers, and code snippets.' : 'Build from system questions, custom questions, or both.' }}</p>
+    </div>
+    <button type="button" class="primary" (click)="create()" [disabled]="loading()">
+      {{ loading() ? (editId() ? 'Saving...' : 'Creating...') : (editId() ? 'Save Quiz' : 'Create Quiz') }}
+    </button>
+  </section>
+
+  @if (message()) {
+    <p class="status" [class.error]="messageKind() === 'error'" [class.success]="messageKind() === 'success'">{{ message() }}</p>
+  }
+
+  @if (loadingQuiz()) {
+    <p class="status">Loading quiz...</p>
+  }
+
+  <section class="panel">
+    <h2>Quiz Details</h2>
+    <div class="grid">
+      <label>
+        Title
+        <input type="text" [(ngModel)]="title" [class.invalid]="titleInvalid()" />
+      </label>
+      <label>
+        Category
+        <select [(ngModel)]="categorySlug" (ngModelChange)="loadSystemQuestions()" [class.invalid]="categoryInvalid()">
+          @for (category of categories(); track category.id) {
+            <option [value]="category.slug">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Time Seconds
+        <input type="number" min="1" [(ngModel)]="timeSeconds" [class.invalid]="quizTimeInvalid()" />
+      </label>
+    </div>
+    <label>
+      Description
+      <textarea rows="3" [(ngModel)]="description" [class.invalid]="descriptionInvalid()"></textarea>
+    </label>
+    <div class="new-category">
+      <label>
+        New Category
+        <input type="text" [(ngModel)]="newCategoryName" placeholder="Category name" />
+      </label>
+      <button type="button" class="secondary-action" (click)="createCategory()">Create Category</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>System Questions</h2>
+    @if (systemQuestions().length === 0) {
+      <p class="status">No system questions found for this category.</p>
+    } @else {
+      <div class="system-list">
+        @for (question of pagedSystemQuestions(); track question.id) {
+          <label class="system-question">
+            <input
+              type="checkbox"
+              [checked]="selectedSystemQuestionIds.has(question.id)"
+              (change)="toggleSystemQuestion(question.id, $any($event.target).checked)"
+            />
+            <span>{{ question.text }}</span>
+          </label>
+        }
+      </div>
+      <div class="pagination">
+        <button type="button" class="ghost" (click)="previousSystemQuestionsPage()" [disabled]="systemQuestionsPage() === 0">Previous</button>
+        <span>Page {{ systemQuestionsPage() + 1 }} of {{ systemQuestionsTotalPages() }}</span>
+        <button type="button" class="ghost" (click)="nextSystemQuestionsPage()" [disabled]="systemQuestionsPage() + 1 >= systemQuestionsTotalPages()">Next</button>
+      </div>
+    }
+  </section>
+
+  <section class="panel">
+    <div class="section-title">
+      <h2>Custom Questions</h2>
+      <button type="button" (click)="addQuestion()">Add Question</button>
+    </div>
+
+    @for (question of questions; track $index; let questionIndex = $index) {
+      <div class="question-editor">
+        <div class="section-title">
+          <h3>Question {{ questionIndex + 1 }}</h3>
+          @if (questions.length > 1) {
+            <button type="button" class="ghost" (click)="removeQuestion(questionIndex)">Remove</button>
+          }
+        </div>
+
+        <label>
+          Question Text
+          <textarea rows="2" [(ngModel)]="question.text" [class.invalid]="questionTextInvalid(question)"></textarea>
+        </label>
+
+        <div class="grid">
+          <label>
+            Time Seconds
+            <input type="number" min="1" [(ngModel)]="question.timeSeconds" [class.invalid]="questionTimeInvalid(question)" />
+          </label>
+          <label>
+            Code Language
+            <select [(ngModel)]="question.codeLanguage">
+              <option value="java">Java</option>
+              <option value="typescript">TypeScript</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Optional Code
+          <textarea class="code-input" rows="5" [(ngModel)]="question.codeSnippet" placeholder="code here"></textarea>
+        </label>
+
+        <div class="answers-editor">
+          <div class="section-title">
+            <h4>Answers</h4>
+            <button type="button" (click)="addAnswer(question)">Add Answer</button>
+          </div>
+          @for (answer of question.answers; track $index; let answerIndex = $index) {
+            <div class="answer-editor">
+              <label class="correct-row">
+                <input type="checkbox" [(ngModel)]="answer.correct" />
+                Correct answer
+              </label>
+              <label>
+                Answer Text
+                <input type="text" [(ngModel)]="answer.description" [class.invalid]="answerInvalid(question, answer)" />
+              </label>
+              <div class="grid">
+                <label>
+                  Code Language
+                  <select [(ngModel)]="answer.codeLanguage">
+                    <option value="java">Java</option>
+                    <option value="typescript">TypeScript</option>
+                  </select>
+                </label>
+                @if (question.answers.length > 1) {
+                  <button type="button" class="ghost align-end" (click)="removeAnswer(question, answerIndex)">Remove Answer</button>
+                }
+              </div>
+              <label>
+                Optional Code
+                <textarea class="code-input" rows="4" [(ngModel)]="answer.codeSnippet" placeholder="code here"></textarea>
+              </label>
+            </div>
+          }
+          @if (correctAnswerInvalid(question)) {
+            <p class="field-error">Select at least one correct answer.</p>
+          }
+        </div>
+      </div>
+    }
+  </section>
+</main>

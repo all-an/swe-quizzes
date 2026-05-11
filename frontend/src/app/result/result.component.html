@@ -1,0 +1,13 @@
+<div class="result-page">
+  <h1>{{ title() }}</h1>
+  <div class="score-circle">
+    <span class="score-value">{{ percentage() }}%</span>
+  </div>
+  <p class="score-detail">{{ score() }} out of {{ total() }} correct</p>
+  <p class="message">
+    @if (percentage() === 100) { Perfect score! }
+    @else if (percentage() >= 70) { Good job! Keep it up. }
+    @else { Keep practicing! }
+  </p>
+  <button class="home-btn" (click)="goHome()">Back to Home</button>
+</div>

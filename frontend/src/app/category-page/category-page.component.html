@@ -1,0 +1,25 @@
+<div class="category-page">
+  <button class="back-btn" (click)="goBack()">← Back</button>
+  <h1>{{ slug().toUpperCase() }} Quizzes</h1>
+
+  @if (loading()) {
+    <p class="status">Loading...</p>
+  } @else if (error()) {
+    <p class="status error">{{ error() }}</p>
+  } @else if (quizzes().length === 0) {
+    <p class="status">No quizzes found for this category.</p>
+  } @else {
+    <div class="quiz-list">
+      @for (quiz of quizzes(); track quiz.id) {
+        <div class="quiz-card">
+          <div class="quiz-info">
+            <span class="quiz-title">{{ quiz.title }}</span>
+            <span class="quiz-meta">{{ quiz.questions.length }} questions · {{ quiz.timeSeconds / 60 }} min</span>
+            <span class="quiz-desc">{{ quiz.description }}</span>
+          </div>
+          <button class="start-btn" (click)="start(quiz.id)">Start</button>
+        </div>
+      }
+    </div>
+  }
+</div>

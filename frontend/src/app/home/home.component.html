@@ -1,0 +1,18 @@
+<div class="home">
+  <h1>Software Engineering Quizzes</h1>
+  <p class="subtitle">Pick a category to get started</p>
+
+  @if (loading()) {
+    <p class="status">Loading...</p>
+  } @else if (error()) {
+    <p class="status error">{{ error() }}</p>
+  } @else {
+    <div class="category-grid">
+      @for (cat of categories(); track cat.id) {
+        <button class="category-card" (click)="open(cat.slug)">
+          {{ cat.name }}
+        </button>
+      }
+    </div>
+  }
+</div>

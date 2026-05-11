@@ -1,0 +1,27 @@
+<main class="auth-page">
+  <form class="auth-panel" (ngSubmit)="register()">
+    <h1>Register</h1>
+    @if (settingsService.settings()?.disableRegister) {
+      <p class="notice">New registrations are disabled right now.</p>
+    }
+    @if (message()) {
+      <p class="status error">{{ message() }}</p>
+    }
+    <label>
+      Name
+      <input type="text" name="name" [(ngModel)]="name" required />
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" [(ngModel)]="email" required />
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" [(ngModel)]="password" minlength="6" required />
+    </label>
+    <button type="submit" [disabled]="loading() || !!settingsService.settings()?.disableRegister">
+      {{ loading() ? 'Creating account...' : 'Create Account' }}
+    </button>
+    <p class="helper">Already have an account? <a routerLink="/login">Login</a></p>
+  </form>
+</main>

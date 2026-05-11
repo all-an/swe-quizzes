@@ -1,0 +1,10 @@
+package com.swequizzes.account;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+public interface AccountRepository extends JpaRepository<Account, Long> {
+    boolean existsByEmailIgnoreCase(String email);
+    Optional<Account> findByEmailIgnoreCase(String email);
+    Optional<Account> findByAuthToken(String authToken);
+}
