@@ -30,7 +30,7 @@ docker compose up -d
 
 ```bash
 cd backend
-./mvnw spring-boot:run
+./mvn spring-boot:run
 ```
 
 API available at `http://localhost:8080/api/quizzes`
