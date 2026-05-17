@@ -2,6 +2,7 @@ package com.swequizzes.admin;
 
 import com.swequizzes.account.AccountService;
 import com.swequizzes.logging.AccessLog;
+import com.swequizzes.logging.LogPage;
 import com.swequizzes.logging.LogService;
 import com.swequizzes.logging.SessionLog;
 import com.swequizzes.settings.Settings;
@@ -9,7 +10,6 @@ import com.swequizzes.settings.SettingsRequest;
 import com.swequizzes.settings.SettingsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -53,10 +53,13 @@ public class AdminController {
     }
 
     @GetMapping("/access-logs")
-    public ResponseEntity<List<AccessLog>> accessLogs(@RequestHeader(value = "Authorization", required = false) String authorization) {
+    public ResponseEntity<LogPage<AccessLog>> accessLogs(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @RequestParam(defaultValue = "0") int page
+    ) {
         try {
             accountService.requireAdmin(authorization);
-            return ResponseEntity.ok(logService.recentAccessLogs());
+            return ResponseEntity.ok(logService.recentAccessLogs(page));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(401).build();
         } catch (SecurityException e) {
@@ -65,10 +68,13 @@ public class AdminController {
     }
 
     @GetMapping("/session-logs")
-    public ResponseEntity<List<SessionLog>> sessionLogs(@RequestHeader(value = "Authorization", required = false) String authorization) {
+    public ResponseEntity<LogPage<SessionLog>> sessionLogs(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @RequestParam(defaultValue = "0") int page
+    ) {
         try {
             accountService.requireAdmin(authorization);
-            return ResponseEntity.ok(logService.recentSessionLogs());
+            return ResponseEntity.ok(logService.recentSessionLogs(page));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(401).build();
         } catch (SecurityException e) {

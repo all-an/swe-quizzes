@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AccessLog, SessionLog, Settings } from '../models/quiz.model';
+import { AccessLog, LogPage, SessionLog, Settings } from '../models/quiz.model';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -28,12 +28,12 @@ export class SettingsService {
     );
   }
 
-  accessLogs(): Observable<AccessLog[]> {
-    return this.http.get<AccessLog[]>('/api/admin/access-logs', this.auth.authHeaders());
+  accessLogs(page: number): Observable<LogPage<AccessLog>> {
+    return this.http.get<LogPage<AccessLog>>(`/api/admin/access-logs?page=${page}`, this.auth.authHeaders());
   }
 
-  sessionLogs(): Observable<SessionLog[]> {
-    return this.http.get<SessionLog[]>('/api/admin/session-logs', this.auth.authHeaders());
+  sessionLogs(page: number): Observable<LogPage<SessionLog>> {
+    return this.http.get<LogPage<SessionLog>>(`/api/admin/session-logs?page=${page}`, this.auth.authHeaders());
   }
 
   logFirstAccess() {

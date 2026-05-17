@@ -101,3 +101,31 @@ button {
   color: #94a3b8;
   font-weight: 700;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.pagination button {
+  align-self: auto;
+  padding: 0.4rem 0.85rem;
+  background: #334155;
+  font-weight: 600;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.empty {
+  padding: 0.75rem 0;
+}

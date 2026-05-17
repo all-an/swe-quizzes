@@ -73,6 +73,14 @@ export interface SessionLog {
   createdAt: string;
 }
 
+export interface LogPage<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  totalElements: number;
+}
+
 export interface CreateAnswerPayload {
   description: string;
   codeSnippet?: string | null;

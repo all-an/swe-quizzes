@@ -1,7 +1,9 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AccessLog, SessionLog, Settings } from '../models/quiz.model';
+import { AccessLog, LogPage, SessionLog, Settings } from '../models/quiz.model';
 import { SettingsService } from '../services/settings.service';
+
+const EMPTY_LOG_PAGE: LogPage<never> = { items: [], page: 0, pageSize: 10, totalPages: 0, totalElements: 0 };
 
 @Component({
   selector: 'app-admin',
@@ -11,8 +13,10 @@ import { SettingsService } from '../services/settings.service';
 })
 export class AdminComponent implements OnInit {
   settings = signal<Settings | null>(null);
-  accessLogs = signal<AccessLog[]>([]);
-  sessionLogs = signal<SessionLog[]>([]);
+  accessLogs = signal<LogPage<AccessLog>>(EMPTY_LOG_PAGE);
+  sessionLogs = signal<LogPage<SessionLog>>(EMPTY_LOG_PAGE);
+  accessPage = signal(0);
+  sessionPage = signal(0);
   message = signal('');
   loading = signal(true);
 
@@ -34,8 +38,52 @@ export class AdminComponent implements OnInit {
         this.loading.set(false);
       },
     });
-    this.settingsService.accessLogs().subscribe({ next: logs => this.accessLogs.set(logs), error: () => undefined });
-    this.settingsService.sessionLogs().subscribe({ next: logs => this.sessionLogs.set(logs), error: () => undefined });
+    this.loadAccessLogs(this.accessPage());
+    this.loadSessionLogs(this.sessionPage());
+  }
+
+  loadAccessLogs(page: number) {
+    this.settingsService.accessLogs(page).subscribe({
+      next: result => {
+        this.accessLogs.set(result);
+        this.accessPage.set(result.page);
+      },
+      error: () => undefined,
+    });
+  }
+
+  loadSessionLogs(page: number) {
+    this.settingsService.sessionLogs(page).subscribe({
+      next: result => {
+        this.sessionLogs.set(result);
+        this.sessionPage.set(result.page);
+      },
+      error: () => undefined,
+    });
+  }
+
+  nextAccessPage() {
+    if (this.accessPage() + 1 < this.accessLogs().totalPages) {
+      this.loadAccessLogs(this.accessPage() + 1);
+    }
+  }
+
+  prevAccessPage() {
+    if (this.accessPage() > 0) {
+      this.loadAccessLogs(this.accessPage() - 1);
+    }
+  }
+
+  nextSessionPage() {
+    if (this.sessionPage() + 1 < this.sessionLogs().totalPages) {
+      this.loadSessionLogs(this.sessionPage() + 1);
+    }
+  }
+
+  prevSessionPage() {
+    if (this.sessionPage() > 0) {
+      this.loadSessionLogs(this.sessionPage() - 1);
+    }
   }
 
   save() {

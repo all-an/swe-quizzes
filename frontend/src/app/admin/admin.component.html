@@ -39,13 +39,22 @@
         <span>IP</span>
         <span>Country</span>
       </div>
-      @for (log of accessLogs(); track log.id) {
+      @for (log of accessLogs().items; track log.id) {
         <div class="row">
           <span>{{ log.createdAt }}</span>
           <span>{{ log.ipAddress }}</span>
           <span>{{ log.country }}</span>
         </div>
+      } @empty {
+        <p class="status empty">No access logs yet.</p>
       }
+    </div>
+    <div class="pagination">
+      <button type="button" (click)="prevAccessPage()" [disabled]="accessPage() === 0">Previous</button>
+      <span class="page-indicator">
+        Page {{ accessLogs().totalPages === 0 ? 0 : accessPage() + 1 }} of {{ accessLogs().totalPages }}
+      </span>
+      <button type="button" (click)="nextAccessPage()" [disabled]="accessPage() + 1 >= accessLogs().totalPages">Next</button>
     </div>
   </section>
 
@@ -59,7 +68,7 @@
         <span>IP</span>
         <span>Country</span>
       </div>
-      @for (log of sessionLogs(); track log.id) {
+      @for (log of sessionLogs().items; track log.id) {
         <div class="row session-row">
           <span>{{ log.createdAt }}</span>
           <span>{{ log.eventType }}</span>
@@ -67,7 +76,16 @@
           <span>{{ log.ipAddress }}</span>
           <span>{{ log.country }}</span>
         </div>
+      } @empty {
+        <p class="status empty">No session logs yet.</p>
       }
+    </div>
+    <div class="pagination">
+      <button type="button" (click)="prevSessionPage()" [disabled]="sessionPage() === 0">Previous</button>
+      <span class="page-indicator">
+        Page {{ sessionLogs().totalPages === 0 ? 0 : sessionPage() + 1 }} of {{ sessionLogs().totalPages }}
+      </span>
+      <button type="button" (click)="nextSessionPage()" [disabled]="sessionPage() + 1 >= sessionLogs().totalPages">Next</button>
     </div>
   </section>
 </main>
