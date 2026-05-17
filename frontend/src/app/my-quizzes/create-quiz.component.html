@@ -82,79 +82,107 @@
   <section class="panel">
     <div class="section-title">
       <h2>Custom Questions</h2>
-      <button type="button" (click)="addQuestion()">Add Question</button>
+      <div class="actions">
+        @if (questions.length > 1) {
+          @if (allCollapsed()) {
+            <button type="button" class="ghost" (click)="expandAll()">Expand all</button>
+          } @else {
+            <button type="button" class="ghost" (click)="collapseAll()">Collapse all</button>
+          }
+        }
+        <button type="button" (click)="addQuestion()">Add Question</button>
+      </div>
     </div>
 
     @for (question of questions; track $index; let questionIndex = $index) {
-      <div class="question-editor">
-        <div class="section-title">
-          <h3>Question {{ questionIndex + 1 }}</h3>
+      <div class="question-editor" [class.collapsed]="question.collapsed">
+        <div class="section-title question-header">
+          <button
+            type="button"
+            class="toggle"
+            (click)="toggleQuestion(question)"
+            [attr.aria-expanded]="!question.collapsed"
+            [attr.aria-label]="question.collapsed ? 'Expand question' : 'Collapse question'"
+          >
+            <span class="caret">{{ question.collapsed ? '▸' : '▾' }}</span>
+            <span class="question-title">
+              <strong>Question {{ questionIndex + 1 }}</strong>
+              @if (question.collapsed) {
+                <span class="preview">{{ questionPreview(question) }}</span>
+              }
+              @if (questionHasErrors(question)) {
+                <span class="field-error">Has errors</span>
+              }
+            </span>
+          </button>
           @if (questions.length > 1) {
             <button type="button" class="ghost" (click)="removeQuestion(questionIndex)">Remove</button>
           }
         </div>
 
-        <label>
-          Question Text
-          <textarea rows="2" [(ngModel)]="question.text" [class.invalid]="questionTextInvalid(question)"></textarea>
-        </label>
-
-        <div class="grid">
+        @if (!question.collapsed) {
           <label>
-            Time Seconds
-            <input type="number" min="1" [(ngModel)]="question.timeSeconds" [class.invalid]="questionTimeInvalid(question)" />
+            Question Text
+            <textarea rows="2" [(ngModel)]="question.text" [class.invalid]="questionTextInvalid(question)"></textarea>
           </label>
-          <label>
-            Code Language
-            <select [(ngModel)]="question.codeLanguage">
-              <option value="java">Java</option>
-              <option value="typescript">TypeScript</option>
-            </select>
-          </label>
-        </div>
 
-        <label>
-          Optional Code
-          <textarea class="code-input" rows="5" [(ngModel)]="question.codeSnippet" placeholder="code here"></textarea>
-        </label>
-
-        <div class="answers-editor">
-          <div class="section-title">
-            <h4>Answers</h4>
-            <button type="button" (click)="addAnswer(question)">Add Answer</button>
+          <div class="grid">
+            <label>
+              Time Seconds
+              <input type="number" min="1" [(ngModel)]="question.timeSeconds" [class.invalid]="questionTimeInvalid(question)" />
+            </label>
+            <label>
+              Code Language
+              <select [(ngModel)]="question.codeLanguage">
+                <option value="java">Java</option>
+                <option value="typescript">TypeScript</option>
+              </select>
+            </label>
           </div>
-          @for (answer of question.answers; track $index; let answerIndex = $index) {
-            <div class="answer-editor">
-              <label class="correct-row">
-                <input type="checkbox" [(ngModel)]="answer.correct" />
-                Correct answer
-              </label>
-              <label>
-                Answer Text
-                <input type="text" [(ngModel)]="answer.description" [class.invalid]="answerInvalid(question, answer)" />
-              </label>
-              <div class="grid">
-                <label>
-                  Code Language
-                  <select [(ngModel)]="answer.codeLanguage">
-                    <option value="java">Java</option>
-                    <option value="typescript">TypeScript</option>
-                  </select>
-                </label>
-                @if (question.answers.length > 1) {
-                  <button type="button" class="ghost align-end" (click)="removeAnswer(question, answerIndex)">Remove Answer</button>
-                }
-              </div>
-              <label>
-                Optional Code
-                <textarea class="code-input" rows="4" [(ngModel)]="answer.codeSnippet" placeholder="code here"></textarea>
-              </label>
+
+          <label>
+            Optional Code
+            <textarea class="code-input" rows="5" [(ngModel)]="question.codeSnippet" placeholder="code here"></textarea>
+          </label>
+
+          <div class="answers-editor">
+            <div class="section-title">
+              <h4>Answers</h4>
+              <button type="button" (click)="addAnswer(question)">Add Answer</button>
             </div>
-          }
-          @if (correctAnswerInvalid(question)) {
-            <p class="field-error">Select at least one correct answer.</p>
-          }
-        </div>
+            @for (answer of question.answers; track $index; let answerIndex = $index) {
+              <div class="answer-editor">
+                <label class="correct-row">
+                  <input type="checkbox" [(ngModel)]="answer.correct" />
+                  Correct answer
+                </label>
+                <label>
+                  Answer Text
+                  <input type="text" [(ngModel)]="answer.description" [class.invalid]="answerInvalid(question, answer)" />
+                </label>
+                <div class="grid">
+                  <label>
+                    Code Language
+                    <select [(ngModel)]="answer.codeLanguage">
+                      <option value="java">Java</option>
+                      <option value="typescript">TypeScript</option>
+                    </select>
+                  </label>
+                  @if (question.answers.length > 1) {
+                    <button type="button" class="ghost align-end" (click)="removeAnswer(question, answerIndex)">Remove Answer</button>
+                  }
+                </div>
+                <label>
+                  Optional Code
+                  <textarea class="code-input" rows="4" [(ngModel)]="answer.codeSnippet" placeholder="code here"></textarea>
+                </label>
+              </div>
+            }
+            @if (correctAnswerInvalid(question)) {
+              <p class="field-error">Select at least one correct answer.</p>
+            }
+          </div>
+        }
       </div>
     }
   </section>

@@ -17,6 +17,7 @@ type DraftQuestion = {
   codeLanguage: CodeLanguage;
   timeSeconds: number;
   answers: DraftAnswer[];
+  collapsed: boolean;
 };
 
 @Component({
@@ -145,6 +146,42 @@ export class CreateQuizComponent implements OnInit {
     this.questions.splice(index, 1);
   }
 
+  toggleQuestion(question: DraftQuestion) {
+    question.collapsed = !question.collapsed;
+  }
+
+  collapseAll() {
+    this.questions.forEach(question => (question.collapsed = true));
+  }
+
+  expandAll() {
+    this.questions.forEach(question => (question.collapsed = false));
+  }
+
+  allCollapsed(): boolean {
+    return this.questions.length > 0 && this.questions.every(question => question.collapsed);
+  }
+
+  questionHasErrors(question: DraftQuestion): boolean {
+    if (!this.submitted() || !this.questionRequired(question)) return false;
+    return this.questionTextInvalid(question)
+      || this.questionTimeInvalid(question)
+      || this.correctAnswerInvalid(question)
+      || question.answers.some(answer => this.answerInvalid(question, answer));
+  }
+
+  questionPreview(question: DraftQuestion): string {
+    const text = question.text.trim();
+    if (!text) return 'Untitled question';
+    return text.length > 80 ? `${text.slice(0, 80)}...` : text;
+  }
+
+  private expandInvalidQuestions() {
+    this.questions.forEach(question => {
+      if (this.questionHasErrors(question)) question.collapsed = false;
+    });
+  }
+
   addAnswer(question: DraftQuestion) {
     question.answers.push(this.newAnswer(false));
   }
@@ -159,6 +196,7 @@ export class CreateQuizComponent implements OnInit {
       .filter(question => question.text.trim() || question.answers.some(answer => answer.description.trim()))
       .map(question => this.toPayload(question));
     if (!this.isFormValid()) {
+      this.expandInvalidQuestions();
       this.setError('Fill all required fields highlighted below.');
       return;
     }
@@ -276,6 +314,7 @@ export class CreateQuizComponent implements OnInit {
         codeLanguage: this.languageOrDefault(answer.codeLanguage),
         correct: answer.correct,
       })),
+      collapsed: true,
     }));
     if (this.questions.length === 0) {
       this.questions = [this.newQuestion()];
@@ -289,6 +328,7 @@ export class CreateQuizComponent implements OnInit {
       codeLanguage: 'java',
       timeSeconds: 30,
       answers: [this.newAnswer(true), this.newAnswer(false)],
+      collapsed: false,
     };
   }
 

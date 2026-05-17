@@ -46,6 +46,64 @@
   background: #111827;
 }
 
+.question-editor.collapsed {
+  padding: 0.6rem 1.25rem;
+  gap: 0;
+}
+
+.question-header .toggle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  min-height: auto;
+  min-width: 0;
+}
+
+.question-header .caret {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  width: 0.9rem;
+  flex-shrink: 0;
+}
+
+.question-header .question-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.question-header .question-title strong {
+  color: #f1f5f9;
+  font-size: 1rem;
+}
+
+.question-header .preview {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .answers-editor,
 .system-list {
   display: flex;
