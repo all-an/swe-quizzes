@@ -6,7 +6,18 @@ services:
       # ALB listener for the backend — the browser reaches the API at http://localhost:8081.
       # Floci binds listener sockets on its own host, so the port must be published here.
       - "8081:8081"
-      # Floci's ECR registry — docker push targets localhost:5100.
-      - "5100:5100"
+      # NB: do NOT publish 5100 here — Floci's ECR registry sidecar binds that
+      # host port itself, and pre-allocating it on this container blocks it.
+      # `docker push` to <acct>.dkr.ecr.<region>.localhost:5100 works via loopback.
+    environment:
+      # Docker Desktop / macOS does not resolve *.localhost, so the default
+      # hostname-style ECR URI fails on push. Path style uses localhost:<port>/...
+      # which Docker resolves and auto-trusts as a loopback insecure registry.
+      FLOCI_SERVICES_ECR_URI_STYLE: path
+      # Pin the registry port so the reported URI and the sidecar's host port match.
+      FLOCI_SERVICES_ECR_REGISTRY_BASE_PORT: "5100"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    # Note: recreating this container resets Floci's emulated cloud (control-plane
+    # state is not persisted across recreation). After any change here, re-run
+    # ./deploy-floci.sh to rebuild the stack. Avoid recreating between deploys.

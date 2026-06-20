@@ -1,6 +1,6 @@
 output "frontend_url" {
   description = "Open this in the browser — the S3-hosted Angular app."
-  value       = "http://${aws_s3_bucket.frontend.bucket}.s3-website.localhost.floci.io:4566"
+  value       = "http://${aws_s3_bucket.frontend.bucket}.s3.localhost.floci.io:4566"
 }
 
 output "backend_url" {

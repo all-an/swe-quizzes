@@ -29,7 +29,7 @@ variable "frontend_bucket" {
 variable "frontend_origin" {
   description = "Public origin of the S3-hosted frontend, allowed by the backend CORS config."
   type        = string
-  default     = "http://swe-quizzes-frontend.s3-website.localhost.floci.io:4566"
+  default     = "http://swe-quizzes-frontend.s3.localhost.floci.io:4566"
 }
 
 variable "backend_listener_port" {
