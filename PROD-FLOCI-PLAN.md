@@ -116,11 +116,17 @@ Removed (with approval): `Dockerfile.render`, `build-dist.sh`, `render-deploy.md
 Mark items `[x]` as they are completed.
 
 ### Phase 0 — Spike & setup
-- [ ] Floci running via `docker compose -f floci-compose.yml up` (healthy on :4566)
-- [ ] AWS CLI configured against Floci (endpoint + dummy creds verified)
-- [ ] Terraform installed and provider pointed at `http://localhost:4566`
-- [ ] **Spike:** ALB → ECS target wiring proven with a throwaway nginx task
-- [ ] Topology decision locked (Fargate+ALB, or fallback EC2 / direct port)
+- [x] Floci running via `docker compose -f floci-compose.yml up` (healthy on :4566)
+- [x] AWS CLI configured against Floci (endpoint + dummy creds verified)
+- [x] Terraform installed (v1.15.6, HashiCorp tap) and reachable on PATH
+- [x] **Spike:** ALB → ECS wiring proven — nginx ECS task served HTTP 200 through ALB listener :8081
+- [x] Topology locked: **Fargate + ALB (ip targets)**, ECS `load_balancer` block auto-registers the task
+
+> Spike notes: ECS runs real containers on Floci's `swe-quizzes_default` network; ECS
+> service `--load-balancers` auto-registers the task IP into the target group; ALB
+> traffic routes correctly even though target health stays `initial` and
+> `register-targets` returns a cosmetic serialization error. The ALB listener port
+> (`8081`) must be published in `floci-compose.yml` to be reachable from the browser.
 
 ### Phase 1 — Frontend (Angular) ✅
 - [x] Add `environment.ts` (dev) and `environment.prod.ts` (`apiUrl` → ALB)
@@ -128,11 +134,11 @@ Mark items `[x]` as they are completed.
 - [x] Replace relative `/api` calls with `${apiUrl}/api/...` in the 3 services
 - [x] `npm run build` produces a clean static bundle (ALB URL baked into prod, tests 19/19 green)
 
-### Phase 2 — Backend (Spring Boot)
-- [ ] Externalize datasource via `SPRING_DATASOURCE_*` env vars (local default kept)
-- [ ] Add CORS config allowing the S3 website origin for `/api/**`
-- [ ] Stop bundling Angular into `resources/static` (API-only build)
-- [ ] New `backend/Dockerfile` (listens on 8080), image builds locally
+### Phase 2 — Backend (Spring Boot) ✅
+- [x] Externalize datasource via `SPRING_DATASOURCE_*` env vars (local default kept)
+- [x] Add CORS config allowing the S3 website origin for `/api/**` (`app.cors.allowed-origins`)
+- [x] Stop bundling Angular into `resources/static` — removed static files + SPA handler (API-only)
+- [x] New `backend/Dockerfile` (multi-stage, listens on 8080) — image builds locally ✓
 
 ### Phase 3 — Infra (Terraform `infra/`)
 - [ ] `provider.tf` — endpoints → Floci, path-style S3, skip validations
