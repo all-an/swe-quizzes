@@ -1,0 +1,23 @@
+# All AWS calls are pointed at Floci. Credentials are fake and validation is
+# skipped because Floci accepts any non-empty values and has no real STS/IMDS.
+provider "aws" {
+  region                      = var.aws_region
+  access_key                  = "test"
+  secret_key                  = "test"
+  s3_use_path_style           = true
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    s3    = var.floci_endpoint
+    ec2   = var.floci_endpoint
+    ecr   = var.floci_endpoint
+    ecs   = var.floci_endpoint
+    elbv2 = var.floci_endpoint
+    rds   = var.floci_endpoint
+    iam   = var.floci_endpoint
+    sts   = var.floci_endpoint
+    logs  = var.floci_endpoint
+  }
+}
