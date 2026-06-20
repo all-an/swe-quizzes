@@ -16,4 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 backend/    # Server-side code
 frontend/   # Client-side code
+floci/      # Reference-only — for reviewing Floci functionality, not for running Floci
 ```
+
+The `floci/` folder is here only to review Floci's functionalities. Do not run Floci from it.

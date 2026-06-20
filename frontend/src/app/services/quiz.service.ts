@@ -3,11 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Category, CreateQuizPayload, Question, Quiz } from '../models/quiz.model';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {
-  private readonly quizzesApi = '/api/quizzes';
-  private readonly categoriesApi = '/api/categories';
+  private readonly api = `${environment.apiUrl}/api`;
+  private readonly quizzesApi = `${this.api}/quizzes`;
+  private readonly categoriesApi = `${this.api}/categories`;
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
@@ -40,6 +42,6 @@ export class QuizService {
   }
 
   getSystemQuestions(categorySlug: string): Observable<Question[]> {
-    return this.http.get<Question[]>(`/api/questions/system?category=${categorySlug}`);
+    return this.http.get<Question[]>(`${this.api}/questions/system?category=${categorySlug}`);
   }
 }

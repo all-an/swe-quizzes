@@ -2,9 +2,11 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Account, AuthResponse } from '../models/quiz.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly api = `${environment.apiUrl}/api`;
   private readonly tokenKey = 'swe_quizzes_token';
   private readonly accountKey = 'swe_quizzes_account';
   private readonly tokenSignal = signal<string | null>(localStorage.getItem(this.tokenKey));
@@ -32,13 +34,13 @@ export class AuthService {
   }
 
   register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/accounts/register', { name, email, password }).pipe(
+    return this.http.post<AuthResponse>(`${this.api}/accounts/register`, { name, email, password }).pipe(
       tap(response => this.store(response))
     );
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', { email, password }).pipe(
+    return this.http.post<AuthResponse>(`${this.api}/auth/login`, { email, password }).pipe(
       tap(response => this.store(response))
     );
   }
@@ -46,7 +48,7 @@ export class AuthService {
   logout() {
     const options = this.authHeaders();
     this.clear();
-    this.http.post('/api/auth/logout', {}, options).subscribe({ error: () => undefined });
+    this.http.post(`${this.api}/auth/logout`, {}, options).subscribe({ error: () => undefined });
   }
 
   private store(response: AuthResponse) {
