@@ -140,15 +140,20 @@ Mark items `[x]` as they are completed.
 - [x] Stop bundling Angular into `resources/static` — removed static files + SPA handler (API-only)
 - [x] New `backend/Dockerfile` (multi-stage, listens on 8080) — image builds locally ✓
 
-### Phase 3 — Infra (Terraform `infra/`)
-- [ ] `provider.tf` — endpoints → Floci, path-style S3, skip validations
-- [ ] `s3.tf` — bucket + website configuration
-- [ ] `ecr.tf` — backend image repository
-- [ ] `rds.tf` — Postgres 16 instance (db `swequizzes`)
-- [ ] `ecs.tf` — cluster, task definition, service (datasource env → RDS)
-- [ ] `alb.tf` — load balancer, target group, listener :8081, `/api/*` rule
-- [ ] `outputs.tf` — frontend URL + ALB URL
-- [ ] `terraform apply` succeeds end-to-end
+### Phase 3 — Infra (Terraform `infra/`) ✅
+- [x] `provider.tf` — endpoints → Floci, path-style S3, skip validations
+- [x] `s3.tf` — bucket + website configuration + public-read policy
+- [x] `ecr.tf` — backend image repository
+- [x] `rds.tf` — Postgres 16 instance (db `swequizzes`) — real container `available`
+- [x] `ecs.tf` — cluster, task definition, service (datasource env → RDS, no exec role)
+- [x] `alb.tf` — load balancer, target group (ip), listener :8081 (forward-all)
+- [x] `outputs.tf` — frontend URL, backend URL, ECR URL, RDS endpoint
+- [x] `terraform apply` succeeds end-to-end (12 resources)
+
+> Apply discoveries: ECR registry is on `localhost:5100` (now published in
+> `floci-compose.yml`); RDS resolves to `172.18.0.2:7001` (Floci host + proxy port),
+> reachable from the ECS task. ECS service is ACTIVE with 0 running tasks until the
+> image is pushed in Phase 4.
 
 ### Phase 4 — Wiring & deploy
 - [ ] Expose ALB/ECS ports in `floci-compose.yml`

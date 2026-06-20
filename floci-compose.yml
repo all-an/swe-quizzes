@@ -6,5 +6,7 @@ services:
       # ALB listener for the backend — the browser reaches the API at http://localhost:8081.
       # Floci binds listener sockets on its own host, so the port must be published here.
       - "8081:8081"
+      # Floci's ECR registry — docker push targets localhost:5100.
+      - "5100:5100"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
