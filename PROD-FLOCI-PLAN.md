@@ -9,7 +9,7 @@ Frontend and backend are deployed and accessed **separately**, via Floci URLs.
 ```
 Browser
   │
-  ├─ http://swe-quizzes-frontend.s3-website.localhost.floci.io:4566   ← Angular static site (S3)
+  ├─ http://swe-quizzes-frontend.s3.localhost.floci.io:4566   ← Angular static site (S3)
   │        │  (JS calls absolute API URL)
   │        ▼
   └─ http://localhost:8081  ──►  ALB (ELBv2 listener :8081)
@@ -155,18 +155,34 @@ Mark items `[x]` as they are completed.
 > reachable from the ECS task. ECS service is ACTIVE with 0 running tasks until the
 > image is pushed in Phase 4.
 
-### Phase 4 — Wiring & deploy
-- [ ] Expose ALB/ECS ports in `floci-compose.yml`
-- [ ] `deploy-floci.sh` orchestrates apply → build → push → deploy → sync
-- [ ] Backend reachable through the ALB (`/api/...` returns data)
-- [ ] RDS readiness/retry handled (Flyway V1–V8 apply cleanly)
-- [ ] Frontend served from S3 website URL, talks to backend successfully
-- [ ] Full end-to-end smoke test (login, load quizzes) passes
+### Phase 4 — Wiring & deploy ✅
+- [x] Expose ALB port 8081 in `floci-compose.yml`; pin ECR registry port; path-style ECR URIs
+- [x] `deploy-floci.sh` orchestrates apply → build → push → deploy → sync
+- [x] Backend reachable through the ALB (`/api/categories`, `/api/settings/public` → 200)
+- [x] RDS connected; Flyway V1–V8 applied cleanly on startup
+- [x] Frontend served from S3 (`…s3.localhost.floci.io:4566`), CORS origin corrected
+- [x] End-to-end verified: S3 frontend → ALB → ECS → RDS returns live data
 
-### Phase 5 — Docs & cleanup
-- [ ] Update `FLOCI-README.md` / `PROD-FLOCI.md` with deploy steps + URLs
-- [ ] Remove Render artifacts (`Dockerfile.render`, `build-dist.sh`, `render-deploy.md`)
-- [ ] Update `PROD-DIST.md` / `README.md` references to Render
+> Gotchas resolved: `*.localhost` doesn't resolve on Docker Desktop → path-style ECR
+> (`FLOCI_SERVICES_ECR_URI_STYLE=path`, pinned `BASE_PORT=5100`). Floci has no
+> `s3-website` host — buckets serve via virtual-hosted `<bucket>.s3.localhost.floci.io`;
+> the CORS origin and `frontend_url` were corrected to match. Recreating the Floci
+> container resets the emulated cloud (no control-plane persistence) — re-run
+> `deploy-floci.sh` after any compose change.
+>
+> Known limitation: SPA deep-link refresh (e.g. `/quiz/1`) returns 404 — Floci doesn't
+> apply S3 `error_document` for virtual-hosted GETs. The app works entered from `/`
+> (client-side routing); only direct deep-link reloads 404.
+
+### Phase 5 — Docs & cleanup ✅
+- [x] Update `FLOCI-README.md` with deploy steps, URLs, and a rebuild tutorial
+- [x] Remove Render artifacts (`Dockerfile.render`, `build-dist.sh`, `docker-build-push.sh`, `render-deploy.md`, `PROD-DIST.md`)
+- [x] Update `README.md` — deployment now Terraform → AWS via Floci
+
+### Post-deploy fix
+- [x] `crypto.randomUUID` fallback — it is undefined over plain HTTP (non-secure
+      context); threw in `App.ngOnInit` and blocked the initial render. Fixed in
+      `settings.service.ts`, frontend rebuilt and re-synced.
 
 ## Open questions
 

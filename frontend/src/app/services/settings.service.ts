@@ -51,9 +51,22 @@ export class SettingsService {
     const key = 'swe_quizzes_session_key';
     let value = sessionStorage.getItem(key);
     if (!value) {
-      value = crypto.randomUUID();
+      value = this.randomUuid();
       sessionStorage.setItem(key, value);
     }
     return value;
+  }
+
+  // crypto.randomUUID exists only in secure contexts (HTTPS / localhost). Served
+  // over plain HTTP it is undefined, so fall back to a manual v4 UUID.
+  private randomUuid(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+      const random = (Math.random() * 16) | 0;
+      const value = char === 'x' ? random : (random & 0x3) | 0x8;
+      return value.toString(16);
+    });
   }
 }
